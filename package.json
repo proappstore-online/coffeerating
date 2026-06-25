@@ -1,0 +1,38 @@
+{
+  "name": "coffeerating",
+  "private": true,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/proappstore-online/coffeerating"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@proappstore/sdk": "^1.9.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "lucide-react": "^0.460.0",
+    "date-fns": "^4.1.0",
+    "react-i18next": "^15.4.0",
+    "i18next": "^24.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.4",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "jsdom": "^26.0.0",
+    "tailwindcss": "^4.2.4",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.10",
+    "vitest": "^4.1.0"
+  }
+}
