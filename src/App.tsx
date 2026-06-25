@@ -176,9 +176,9 @@ function SubmitForm({ onDone }: { onDone: () => void }) {
           {preview ? (
             <img src={preview} alt="preview" className="w-full aspect-[4/3] object-cover" />
           ) : (
-            <div className="aspect-[4/3] flex items-center justify-center text-[var(--muted)] text-sm">Tap to add a photo</div>
+            <div className="aspect-[4/3] flex items-center justify-center text-[var(--muted)] text-sm">Tap to take a photo</div>
           )}
-          <input type="file" accept="image/*" aria-label="Coffee photo" onChange={(e) => pickFile(e.target.files?.[0] ?? null)} className="block w-full text-xs p-2" />
+          <input type="file" accept="image/*" capture="environment" aria-label="Coffee photo" onChange={(e) => pickFile(e.target.files?.[0] ?? null)} className="block w-full text-xs p-2" />
         </div>
       </label>
 
