@@ -221,7 +221,7 @@ function SubmitForm({ city, onDone }: { city: string; onDone: () => void }) {
     setSaving(true); setError(null)
     try {
       const id = crypto.randomUUID()
-      const { key } = await app.storage.uploadPublic(`ratings/${id}/photo.jpg`, file, file.type || 'image/jpeg')
+      const { key } = await app.storage.uploadUserPublic(`ratings/${id}/photo.jpg`, file, file.type || 'image/jpeg')
       let cafeId = cafe.id
       if (!cafeId) {
         cafeId = `${city}-${cafe.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50)}`
