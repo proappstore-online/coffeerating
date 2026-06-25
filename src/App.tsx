@@ -281,7 +281,9 @@ export default function App() {
   const [city, setCity] = useState<string | null>(null)
   const [picking, setPicking] = useState(false)
 
-  useEffect(() => { app.db.migrate(MIGRATIONS).catch(() => {}) }, [])
+  // app.db requires auth (the data worker rejects anonymous reads), so migrate
+  // only once a user is signed in — the first signed-in visit creates the tables.
+  useEffect(() => { if (user) app.db.migrate(MIGRATIONS).catch(() => {}) }, [user])
   useEffect(() => {
     const local = (() => { try { return localStorage.getItem(CITY_KEY) } catch { return null } })()
     if (local) setCity(local)
@@ -338,12 +340,18 @@ export default function App() {
               </div>
               {user && <button onClick={() => setView('submit')} className="btn btn-primary whitespace-nowrap">Rate a coffee</button>}
             </div>
-            {!user && (
-              <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-sm text-[var(--muted)]">
-                <button onClick={() => app.auth.signIn('github')} className="text-[var(--accent)] font-semibold">Sign in</button> to rate. Browsing is open to everyone.
+            {user ? (
+              <Feed key={`${city}-${feedKey}`} city={city!} />
+            ) : (
+              <div className="text-center py-16 space-y-4">
+                <p className="text-[var(--muted)]">Sign in to see and rate coffee in {cityLabel(city)}.</p>
+                <div className="flex items-center justify-center gap-2">
+                  <button onClick={() => app.auth.signIn('github')} className="btn btn-primary">Sign in with GitHub</button>
+                  <button onClick={() => app.auth.signIn('google')} className="btn btn-secondary">Google</button>
+                </div>
+                <p className="text-xs text-[var(--muted)]">Ratings are anonymous — your name is never shown.</p>
               </div>
             )}
-            <Feed key={`${city}-${feedKey}`} city={city!} />
           </div>
         ) : view === 'submit' ? (
           <SubmitForm city={city!} onDone={() => { setFeedKey((k) => k + 1); setView('home') }} />
