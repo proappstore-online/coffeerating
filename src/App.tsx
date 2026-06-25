@@ -23,7 +23,7 @@ const CITIES: { id: string; label: string }[] = [
 const cityLabel = (id: string | null) => CITIES.find((c) => c.id === id)?.label ?? 'Choose city'
 const CITY_KEY = 'cr_city'
 
-// ── Data model (cafes are scoped by city; see docs/data-model.md) ──
+// ── Data model (cafes scoped by city, with address + coords) ──
 const MIGRATIONS = [
   { name: '0001_create_cafes', sql: `CREATE TABLE IF NOT EXISTS cafes (id TEXT PRIMARY KEY, name TEXT NOT NULL, address TEXT, lat REAL, lng REAL, created_at TEXT NOT NULL)` },
   { name: '0002_create_ratings', sql: `CREATE TABLE IF NOT EXISTS ratings (id TEXT PRIMARY KEY, cafe_id TEXT NOT NULL, user_id TEXT NOT NULL, photo_key TEXT NOT NULL, stars INTEGER NOT NULL, drink_desc TEXT, review TEXT, created_at TEXT NOT NULL)` },
@@ -31,7 +31,7 @@ const MIGRATIONS = [
 ]
 
 interface RatingRow {
-  id: string; cafe_name: string; photo_key: string; stars: number
+  id: string; cafe_name: string; cafe_address: string | null; photo_key: string; stars: number
   drink_desc: string | null; review: string | null; created_at: string
 }
 
@@ -77,6 +77,74 @@ function CityPicker({ current, onPick, onClose }: { current: string | null; onPi
   )
 }
 
+// ── Café picker: choose an existing café or add a new one ─────
+interface CafeOption { id?: string; name: string; isNew: boolean; address?: string | null; lat?: number | null; lng?: number | null }
+
+function CafeSelect({ city, onSelect }: { city: string; onSelect: (c: CafeOption | null) => void }) {
+  const [all, setAll] = useState<{ id: string; name: string; address: string | null }[]>([])
+  const [q, setQ] = useState('')
+  const [open, setOpen] = useState(false)
+  const [chosen, setChosen] = useState<CafeOption | null>(null)
+  const [geocoding, setGeocoding] = useState(false)
+
+  useEffect(() => {
+    setAll([]); setQ(''); setChosen(null); onSelect(null)
+    app.db.query<{ id: string; name: string; address: string | null }>(
+      'SELECT id, name, address FROM cafes WHERE city = ? ORDER BY name LIMIT 200', [city])
+      .then((r) => setAll(r.rows)).catch(() => setAll([]))
+  }, [city])
+
+  const ql = q.trim().toLowerCase()
+  const matches = ql ? all.filter((c) => c.name.toLowerCase().includes(ql)) : all.slice(0, 8)
+  const exact = all.some((c) => c.name.toLowerCase() === ql)
+
+  const pickExisting = (c: { id: string; name: string; address: string | null }) => {
+    const opt: CafeOption = { id: c.id, name: c.name, isNew: false, address: c.address }
+    setChosen(opt); setQ(c.name); setOpen(false); onSelect(opt)
+  }
+
+  const addNew = async () => {
+    const name = q.trim(); if (!name) return
+    setOpen(false); setGeocoding(true)
+    let address: string | null = null, lat: number | null = null, lng: number | null = null
+    try {
+      const g = await app.maps.geocode(`${name}, ${cityLabel(city)}`)
+      if (g[0]) { address = g[0].displayName ?? null; lat = g[0].lat; lng = g[0].lng }
+    } catch { /* geocode best-effort */ }
+    setGeocoding(false)
+    const opt: CafeOption = { name, isNew: true, address, lat, lng }
+    setChosen(opt); onSelect(opt)
+  }
+
+  return (
+    <div className="relative">
+      <input value={q}
+        onChange={(e) => { setQ(e.target.value); setOpen(true); if (chosen) { setChosen(null); onSelect(null) } }}
+        onFocus={() => setOpen(true)} placeholder="Search or add a café" aria-label="Café"
+        className="w-full rounded-lg border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm text-[var(--ink)]" />
+      {open && (
+        <div className="absolute z-20 mt-1 w-full rounded-lg border border-[var(--line)] bg-[var(--paper)] shadow-lg max-h-56 overflow-y-auto">
+          {matches.map((c) => (
+            <button key={c.id} type="button" onClick={() => pickExisting(c)} className="block w-full text-left px-3 py-2 hover:bg-[var(--panel)]">
+              <span className="text-sm text-[var(--ink)] font-medium">{c.name}</span>
+              {c.address && <span className="block text-[11px] text-[var(--muted)] truncate">{c.address}</span>}
+            </button>
+          ))}
+          {ql && !exact && (
+            <button type="button" onClick={addNew} className="block w-full text-left px-3 py-2 text-sm text-[var(--accent)] font-semibold hover:bg-[var(--panel)] border-t border-[var(--line)]">
+              ➕ Add "{q.trim()}" — looks up its address
+            </button>
+          )}
+          {!ql && matches.length === 0 && <div className="px-3 py-2 text-xs text-[var(--muted)]">No cafés yet — type a name to add one.</div>}
+        </div>
+      )}
+      {geocoding && <p className="mt-1 text-xs text-[var(--muted)]">Looking up the address…</p>}
+      {chosen?.address && <p className="mt-1 text-xs text-[var(--muted)]">📍 {chosen.address}</p>}
+      {chosen?.isNew && !chosen.address && !geocoding && <p className="mt-1 text-xs text-[var(--muted)]">New café (address not found — saved by name).</p>}
+    </div>
+  )
+}
+
 function Feed({ city }: { city: string }) {
   const [rows, setRows] = useState<RatingRow[] | null>(null)
   const [sort, setSort] = useState<'recent' | 'top'>('recent')
@@ -86,7 +154,7 @@ function Feed({ city }: { city: string }) {
     setRows(null)
     const order = sort === 'top' ? 'r.stars DESC, r.created_at DESC' : 'r.created_at DESC'
     app.db.query<RatingRow>(
-      `SELECT r.id, c.name AS cafe_name, r.photo_key, r.stars, r.drink_desc, r.review, r.created_at
+      `SELECT r.id, c.name AS cafe_name, c.address AS cafe_address, r.photo_key, r.stars, r.drink_desc, r.review, r.created_at
        FROM ratings r JOIN cafes c ON c.id = r.cafe_id
        WHERE c.city = ? ORDER BY ${order} LIMIT 50`, [city])
       .then((res) => { if (!cancelled) setRows(res.rows) })
@@ -123,6 +191,7 @@ function Feed({ city }: { city: string }) {
                 <span className="text-[11px] text-[var(--muted)]">{timeAgo(r.created_at)}</span>
               </div>
               <p className="font-semibold text-[var(--ink)] text-sm">{r.cafe_name}</p>
+              {r.cafe_address && <p className="text-[11px] text-[var(--muted)] truncate">📍 {r.cafe_address}</p>}
               {r.drink_desc && <p className="text-xs text-[var(--muted)]">{r.drink_desc}</p>}
               {r.review && <p className="text-sm text-[var(--ink)]">{r.review}</p>}
             </div>
@@ -136,7 +205,7 @@ function Feed({ city }: { city: string }) {
 function SubmitForm({ city, onDone }: { city: string; onDone: () => void }) {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
-  const [cafe, setCafe] = useState('')
+  const [cafe, setCafe] = useState<CafeOption | null>(null)
   const [stars, setStars] = useState(0)
   const [drink, setDrink] = useState('')
   const [review, setReview] = useState('')
@@ -147,18 +216,22 @@ function SubmitForm({ city, onDone }: { city: string; onDone: () => void }) {
 
   const submit = useCallback(async () => {
     if (!file) return setError('A photo is required.')
-    if (!cafe.trim()) return setError('Pick a café.')
+    if (!cafe) return setError('Pick or add a café.')
     if (stars < 1) return setError('Give it a star rating.')
     setSaving(true); setError(null)
     try {
       const id = crypto.randomUUID()
       const { key } = await app.storage.uploadPublic(`ratings/${id}/photo.jpg`, file, file.type || 'image/jpeg')
-      const cafeId = `${city}-${cafe.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50)}` || crypto.randomUUID()
-      const now = new Date().toISOString()
-      await app.db.execute('INSERT OR IGNORE INTO cafes (id, name, city, created_at) VALUES (?, ?, ?, ?)', [cafeId, cafe.trim(), city, now])
+      let cafeId = cafe.id
+      if (!cafeId) {
+        cafeId = `${city}-${cafe.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50)}`
+        await app.db.execute(
+          'INSERT OR IGNORE INTO cafes (id, name, city, address, lat, lng, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [cafeId, cafe.name, city, cafe.address ?? null, cafe.lat ?? null, cafe.lng ?? null, new Date().toISOString()])
+      }
       await app.db.execute(
         'INSERT INTO ratings (id, cafe_id, user_id, photo_key, stars, drink_desc, review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, cafeId, app.auth.user?.id ?? 'anon', key, stars, drink.trim() || null, review.trim() || null, now])
+        [id, cafeId, app.auth.user?.id ?? 'anon', key, stars, drink.trim() || null, review.trim() || null, new Date().toISOString()])
       onDone()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not submit. Try again.')
@@ -176,11 +249,10 @@ function SubmitForm({ city, onDone }: { city: string; onDone: () => void }) {
           <input type="file" accept="image/*" capture="environment" aria-label="Coffee photo" onChange={(e) => pickFile(e.target.files?.[0] ?? null)} className="block w-full text-xs p-2" />
         </div>
       </label>
-      <label className="block">
+      <div>
         <span className="text-sm font-semibold text-[var(--ink)]">Café</span>
-        <input value={cafe} onChange={(e) => setCafe(e.target.value)} placeholder="e.g. Single O, Surry Hills"
-          className="mt-1 w-full rounded-lg border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm text-[var(--ink)]" />
-      </label>
+        <div className="mt-1"><CafeSelect city={city} onSelect={setCafe} /></div>
+      </div>
       <div><span className="text-sm font-semibold text-[var(--ink)]">Rating</span><div className="mt-1"><Stars value={stars} onChange={setStars} /></div></div>
       <label className="block">
         <span className="text-sm font-semibold text-[var(--ink)]">Drink <span className="text-[var(--muted)] font-normal">(optional)</span></span>
@@ -209,7 +281,6 @@ export default function App() {
   const [city, setCity] = useState<string | null>(null)
   const [picking, setPicking] = useState(false)
 
-  // Run migrations + load the saved city pref (localStorage now, app.kv when signed in).
   useEffect(() => { app.db.migrate(MIGRATIONS).catch(() => {}) }, [])
   useEffect(() => {
     const local = (() => { try { return localStorage.getItem(CITY_KEY) } catch { return null } })()
@@ -223,7 +294,6 @@ export default function App() {
     if (user) app.kv.set('city', id).catch(() => {})
   }, [user])
 
-  // First run: pick a city before anything else.
   const needCity = !city || picking
 
   return (
