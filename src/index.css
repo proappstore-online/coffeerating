@@ -23,6 +23,10 @@
   --shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
   --radius: 12px;
   --radius-sm: 8px;
+  /* Aliases for @proappstore/sdk UI primitives (ThemeToggle etc.).
+     Resolve at point-of-use, so they track the dark override automatically. */
+  --surface: var(--paper);
+  --border: var(--line);
   color-scheme: light dark;
 }
 
