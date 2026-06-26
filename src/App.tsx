@@ -2,6 +2,7 @@ import { initPro } from '@proappstore/sdk'
 import { useProAuth, useTheme } from '@proappstore/sdk/hooks'
 import { Avatar, ThemeToggle, ProProfilePage } from '@proappstore/sdk/ui'
 import { useState, useEffect, useCallback } from 'react'
+import { Settings } from 'lucide-react'
 
 export const app = initPro({ appId: 'coffeerating' })
 
@@ -315,7 +316,7 @@ export default function App() {
             <ThemeToggle />
             {loading ? null : user ? (
               <>
-                <button onClick={() => setView('settings')} className="text-xs text-[var(--muted)] hover:text-[var(--ink)]">Settings</button>
+                <button onClick={() => setView('settings')} aria-label="Settings" title="Settings" className="text-[var(--muted)] hover:text-[var(--ink)] p-1"><Settings size={18} /></button>
                 <button onClick={() => setView('profile')} aria-label="Profile"><Avatar user={user} size={28} /></button>
               </>
             ) : (
