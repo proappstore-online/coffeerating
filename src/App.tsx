@@ -1,6 +1,6 @@
 import { initPro } from '@proappstore/sdk'
 import { useProAuth, useTheme } from '@proappstore/sdk/hooks'
-import { Avatar, ThemeToggle, ProProfilePage } from '@proappstore/sdk/ui'
+import { Avatar, ThemeToggle, TextSizeToggle, ProProfilePage } from '@proappstore/sdk/ui'
 import { useState, useEffect, useCallback } from 'react'
 import { Settings } from 'lucide-react'
 
@@ -368,6 +368,9 @@ export default function App() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--ink)]">Theme</span><ThemeToggle />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--ink)]">Text size</span><TextSizeToggle />
               </div>
             </div>
           </div>
