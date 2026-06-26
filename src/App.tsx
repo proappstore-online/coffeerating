@@ -357,7 +357,7 @@ export default function App() {
         ) : view === 'submit' ? (
           <SubmitForm city={city!} onDone={() => { setFeedKey((k) => k + 1); setView('home') }} />
         ) : view === 'profile' && user ? (
-          <ProProfilePage app={app} />
+          <ProProfilePage app={app} showThemeToggle={false} />
         ) : view === 'settings' ? (
           <div className="max-w-md space-y-4">
             <h2 className="text-xl font-bold text-[var(--ink)]">Settings</h2>
