@@ -1,7 +1,7 @@
 import { initPro } from '@proappstore/sdk'
 import { useProAuth, useTheme } from '@proappstore/sdk/hooks'
 import { Avatar, ThemeToggle, TextSizeToggle, ProProfilePage } from '@proappstore/sdk/ui'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Settings } from 'lucide-react'
 
 export const app = initPro({ appId: 'coffeerating' })
@@ -87,12 +87,22 @@ function CafeSelect({ city, onSelect }: { city: string; onSelect: (c: CafeOption
   const [open, setOpen] = useState(false)
   const [chosen, setChosen] = useState<CafeOption | null>(null)
   const [geocoding, setGeocoding] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   useEffect(() => {
     setAll([]); setQ(''); setChosen(null); onSelect(null)
     app.db.query<{ id: string; name: string; address: string | null }>(
       'SELECT id, name, address FROM cafes WHERE city = ? ORDER BY name LIMIT 200', [city])
       .then((r) => setAll(r.rows)).catch(() => setAll([]))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [city])
 
   const ql = q.trim().toLowerCase()
@@ -118,7 +128,7 @@ function CafeSelect({ city, onSelect }: { city: string; onSelect: (c: CafeOption
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapRef}>
       <input value={q}
         onChange={(e) => { setQ(e.target.value); setOpen(true); if (chosen) { setChosen(null); onSelect(null) } }}
         onFocus={() => setOpen(true)} placeholder="Search or add a café" aria-label="Café"
@@ -213,7 +223,10 @@ function SubmitForm({ city, onDone }: { city: string; onDone: () => void }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const pickFile = (f: File | null) => { setFile(f); setPreview(f ? URL.createObjectURL(f) : null) }
+  const pickFile = (f: File | null) => {
+    if (preview) URL.revokeObjectURL(preview)
+    setFile(f); setPreview(f ? URL.createObjectURL(f) : null)
+  }
 
   const submit = useCallback(async () => {
     if (!file) return setError('A photo is required.')
@@ -225,7 +238,7 @@ function SubmitForm({ city, onDone }: { city: string; onDone: () => void }) {
       const { key } = await app.storage.uploadUserPublic(`ratings/${id}/photo.jpg`, file, file.type || 'image/jpeg')
       let cafeId = cafe.id
       if (!cafeId) {
-        cafeId = `${city}-${cafe.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50)}`
+        cafeId = `${city}-${cafe.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50)}`
         await app.db.execute(
           'INSERT OR IGNORE INTO cafes (id, name, city, address, lat, lng, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
           [cafeId, cafe.name, city, cafe.address ?? null, cafe.lat ?? null, cafe.lng ?? null, new Date().toISOString()])
