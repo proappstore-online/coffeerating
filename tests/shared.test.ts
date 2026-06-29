@@ -4,7 +4,7 @@ vi.mock('@proappstore/sdk', () => ({
   initPro: () => ({}),
 }))
 
-import { timeAgo, cityLabel, CITIES, CITY_KEY, MIGRATIONS } from '../src/shared'
+import { timeAgo, cityLabel, CITIES, CITY_KEY, COFFEE_TYPES, MIGRATIONS } from '../src/shared'
 
 describe('timeAgo', () => {
   it('returns "just now" for timestamps less than 60s ago', () => {
@@ -62,12 +62,27 @@ describe('CITY_KEY', () => {
   })
 })
 
+describe('COFFEE_TYPES', () => {
+  it('has 10 options', () => {
+    expect(COFFEE_TYPES).toHaveLength(10)
+  })
+
+  it('includes common types', () => {
+    expect(COFFEE_TYPES).toContain('Espresso')
+    expect(COFFEE_TYPES).toContain('Latte')
+    expect(COFFEE_TYPES).toContain('Flat White')
+    expect(COFFEE_TYPES).toContain('Other')
+  })
+})
+
 describe('MIGRATIONS', () => {
-  it('has 3 migrations in order', () => {
-    expect(MIGRATIONS).toHaveLength(3)
+  it('has 5 migrations in order', () => {
+    expect(MIGRATIONS).toHaveLength(5)
     expect(MIGRATIONS[0].name).toBe('0001_create_cafes')
     expect(MIGRATIONS[1].name).toBe('0002_create_ratings')
     expect(MIGRATIONS[2].name).toBe('0003_add_cafe_city')
+    expect(MIGRATIONS[3].name).toBe('0004_add_coffee_type')
+    expect(MIGRATIONS[4].name).toBe('0005_add_milk_type')
   })
 
   it('each migration has name and sql', () => {

@@ -21,15 +21,22 @@ export const cityLabel = (id: string | null) => CITIES.find((c) => c.id === id)?
 
 export const CITY_KEY = 'cr_city'
 
+export const COFFEE_TYPES = [
+  'Espresso', 'Latte', 'Cappuccino', 'Flat White', 'Americano',
+  'Macchiato', 'Cold Brew', 'Mocha', 'Cortado', 'Other',
+] as const
+
 export const MIGRATIONS = [
   { name: '0001_create_cafes', sql: `CREATE TABLE IF NOT EXISTS cafes (id TEXT PRIMARY KEY, name TEXT NOT NULL, address TEXT, lat REAL, lng REAL, created_at TEXT NOT NULL)` },
   { name: '0002_create_ratings', sql: `CREATE TABLE IF NOT EXISTS ratings (id TEXT PRIMARY KEY, cafe_id TEXT NOT NULL, user_id TEXT NOT NULL, photo_key TEXT NOT NULL, stars INTEGER NOT NULL, drink_desc TEXT, review TEXT, created_at TEXT NOT NULL)` },
   { name: '0003_add_cafe_city', sql: `ALTER TABLE cafes ADD COLUMN city TEXT` },
+  { name: '0004_add_coffee_type', sql: `ALTER TABLE ratings ADD COLUMN coffee_type TEXT` },
+  { name: '0005_add_milk_type', sql: `ALTER TABLE ratings ADD COLUMN milk_type TEXT` },
 ]
 
 export interface RatingRow {
   id: string; cafe_name: string; cafe_address: string | null; photo_key: string; stars: number
-  drink_desc: string | null; review: string | null; created_at: string
+  drink_desc: string | null; review: string | null; coffee_type: string | null; milk_type: string | null; created_at: string
 }
 
 export interface CafeOption {

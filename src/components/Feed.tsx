@@ -11,7 +11,7 @@ export function Feed({ city }: { city: string }) {
     setRows(null)
     const order = sort === 'top' ? 'r.stars DESC, r.created_at DESC' : 'r.created_at DESC'
     app.db.query<RatingRow>(
-      `SELECT r.id, c.name AS cafe_name, c.address AS cafe_address, r.photo_key, r.stars, r.drink_desc, r.review, r.created_at
+      `SELECT r.id, c.name AS cafe_name, c.address AS cafe_address, r.photo_key, r.stars, r.drink_desc, r.review, r.coffee_type, r.milk_type, r.created_at
        FROM ratings r JOIN cafes c ON c.id = r.cafe_id
        WHERE c.city = ? ORDER BY ${order} LIMIT 50`, [city])
       .then((res) => { if (!cancelled) setRows(res.rows) })
@@ -48,6 +48,12 @@ export function Feed({ city }: { city: string }) {
                 <span className="text-[11px] text-[var(--muted)]">{timeAgo(r.created_at)}</span>
               </div>
               <p className="font-semibold text-[var(--ink)] text-sm">{r.cafe_name}</p>
+              {(r.coffee_type || r.milk_type) && (
+                <div className="flex flex-wrap gap-1">
+                  {r.coffee_type && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)]">{r.coffee_type}</span>}
+                  {r.milk_type && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--line)] text-[var(--muted)]">{r.milk_type}</span>}
+                </div>
+              )}
               {r.cafe_address && <p className="text-[11px] text-[var(--muted)] truncate">📍 {r.cafe_address}</p>}
               {r.drink_desc && <p className="text-xs text-[var(--muted)]">{r.drink_desc}</p>}
               {r.review && <p className="text-sm text-[var(--ink)]">{r.review}</p>}

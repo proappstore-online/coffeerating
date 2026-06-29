@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { app, cityLabel, type CafeOption } from '../shared'
+import { app, cityLabel, COFFEE_TYPES, type CafeOption } from '../shared'
 import { Stars } from './Stars'
 import { CafeSelect } from './CafeSelect'
 
@@ -8,6 +8,8 @@ export function SubmitForm({ city, onDone }: { city: string; onDone: () => void 
   const [preview, setPreview] = useState<string | null>(null)
   const [cafe, setCafe] = useState<CafeOption | null>(null)
   const [stars, setStars] = useState(0)
+  const [coffeeType, setCoffeeType] = useState('')
+  const [milkType, setMilkType] = useState('')
   const [drink, setDrink] = useState('')
   const [review, setReview] = useState('')
   const [saving, setSaving] = useState(false)
@@ -22,6 +24,7 @@ export function SubmitForm({ city, onDone }: { city: string; onDone: () => void 
     if (!file) return setError('A photo is required.')
     if (!cafe) return setError('Pick or add a café.')
     if (stars < 1) return setError('Give it a star rating.')
+    if (!coffeeType) return setError('Pick a coffee type.')
     setSaving(true); setError(null)
     try {
       const id = crypto.randomUUID()
@@ -34,13 +37,13 @@ export function SubmitForm({ city, onDone }: { city: string; onDone: () => void 
           [cafeId, cafe.name, city, cafe.address ?? null, cafe.lat ?? null, cafe.lng ?? null, new Date().toISOString()])
       }
       await app.db.execute(
-        'INSERT INTO ratings (id, cafe_id, user_id, photo_key, stars, drink_desc, review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, cafeId, app.auth.user?.id ?? 'anon', key, stars, drink.trim() || null, review.trim() || null, new Date().toISOString()])
+        'INSERT INTO ratings (id, cafe_id, user_id, photo_key, stars, drink_desc, review, coffee_type, milk_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [id, cafeId, app.auth.user?.id ?? 'anon', key, stars, drink.trim() || null, review.trim() || null, coffeeType, milkType || null, new Date().toISOString()])
       onDone()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not submit. Try again.')
     } finally { setSaving(false) }
-  }, [file, cafe, stars, drink, review, city, onDone])
+  }, [file, cafe, stars, coffeeType, milkType, drink, review, city, onDone])
 
   return (
     <div className="max-w-md mx-auto space-y-4">
@@ -58,6 +61,28 @@ export function SubmitForm({ city, onDone }: { city: string; onDone: () => void 
         <div className="mt-1"><CafeSelect city={city} onSelect={setCafe} /></div>
       </div>
       <div><span className="text-sm font-semibold text-[var(--ink)]">Rating</span><div className="mt-1"><Stars value={stars} onChange={setStars} /></div></div>
+      <div>
+        <span className="text-sm font-semibold text-[var(--ink)]">Coffee type</span>
+        <div className="mt-1 flex flex-wrap gap-1.5">
+          {COFFEE_TYPES.map((t) => (
+            <button key={t} type="button" onClick={() => setCoffeeType(t)}
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold ${coffeeType === t ? 'bg-[var(--accent)] text-white' : 'border border-[var(--line)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--ink)]'}`}>
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <span className="text-sm font-semibold text-[var(--ink)]">Milk type <span className="text-[var(--muted)] font-normal">(optional)</span></span>
+        <div className="mt-1 flex flex-wrap gap-1.5">
+          {(['Full Cream', 'Skim', 'Oat', 'Almond', 'Soy', 'Coconut', 'Black (no milk)'] as const).map((t) => (
+            <button key={t} type="button" onClick={() => setMilkType(milkType === t ? '' : t)}
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold ${milkType === t ? 'bg-[var(--accent)] text-white' : 'border border-[var(--line)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--ink)]'}`}>
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
       <label className="block">
         <span className="text-sm font-semibold text-[var(--ink)]">Drink <span className="text-[var(--muted)] font-normal">(optional)</span></span>
         <input value={drink} onChange={(e) => setDrink(e.target.value)} placeholder="Oat flat white, extra hot"
