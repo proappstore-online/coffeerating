@@ -1,0 +1,30 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "coffeerating" [ref=e7]
+        - button "📍 Sydney CBD" [ref=e8]
+      - generic [ref=e9]:
+        - 'button "Theme: system" [ref=e10] [cursor=pointer]':
+          - img [ref=e11]
+        - button "Settings" [ref=e13]:
+          - img [ref=e14]
+        - button "Profile" [active] [ref=e17]:
+          - img "serge-ivo" [ref=e18]
+  - main [ref=e19]:
+    - generic [ref=e75]:
+      - generic [ref=e76]:
+        - img "serge-ivo" [ref=e77]
+        - generic [ref=e78]:
+          - generic [ref=e80]: serge-ivo
+          - generic [ref=e81]: ProAppStore account
+      - generic [ref=e82]:
+        - generic [ref=e83]: Subscription
+        - generic [ref=e84]:
+          - paragraph [ref=e85]: You're on the free plan. Upgrade to unlock all premium features.
+          - button "Upgrade to Pro — $9/mo" [ref=e86] [cursor=pointer]
+      - button "Sign out" [ref=e87] [cursor=pointer]
+      - generic [ref=e88]:
+        - generic [ref=e89]: Danger zone
+        - paragraph [ref=e90]: Permanently delete your account and all data across all apps.
+        - button "Delete account" [ref=e91] [cursor=pointer]

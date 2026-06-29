@@ -1,0 +1,4 @@
+[      95ms] The requested module '/src/App.ts' does not provide an export named 'default'
+[   12341ms] [ERROR] WebSocket connection to 'ws://localhost:5174/?token=bspavsCuPgbt' failed:  @ http://localhost:5174/@vite/client:864
+[   12341ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5174/@vite/client:992
+[   18935ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=45c2055d:14335

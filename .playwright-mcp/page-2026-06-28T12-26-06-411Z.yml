@@ -1,0 +1,27 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "coffeerating" [ref=e7]
+        - button "📍 Sydney CBD" [ref=e8]
+      - generic [ref=e9]:
+        - 'button "Theme: system" [ref=e10] [cursor=pointer]':
+          - img [ref=e11]
+        - button "Settings" [active] [ref=e13]:
+          - img [ref=e14]
+        - button "Profile" [ref=e17]:
+          - img "serge-ivo" [ref=e18]
+  - main [ref=e19]:
+    - generic [ref=e61]:
+      - heading "Settings" [level=2] [ref=e62]
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - generic [ref=e65]: City
+          - button "Sydney CBD · Change" [ref=e66]
+        - generic [ref=e67]:
+          - generic [ref=e68]: Theme
+          - 'button "Theme: system" [ref=e69] [cursor=pointer]':
+            - img [ref=e70]
+        - generic [ref=e72]:
+          - generic [ref=e73]: Text size
+          - 'button "Text: default" [ref=e74] [cursor=pointer]': A

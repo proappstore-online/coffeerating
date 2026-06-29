@@ -1,0 +1,32 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "coffeerating" [ref=e7]
+        - button "📍 Sydney CBD" [ref=e8]
+      - generic [ref=e9]:
+        - 'button "Theme: system" [active] [ref=e117] [cursor=pointer]':
+          - img [ref=e11]
+        - button "Settings" [ref=e13]:
+          - img [ref=e14]
+        - button "Profile" [ref=e17]:
+          - img "serge-ivo" [ref=e18]
+  - main [ref=e19]:
+    - generic [ref=e99]:
+      - generic [ref=e100]:
+        - heading "Choose your city" [level=2] [ref=e101]
+        - paragraph [ref=e102]: CoffeeRating scopes ratings to one CBD. You can change it anytime.
+      - generic [ref=e103]:
+        - button "Sydney CBD" [ref=e104]
+        - button "Melbourne CBD" [ref=e105]
+        - button "Brisbane CBD" [ref=e106]
+        - button "Perth CBD" [ref=e107]
+        - button "Adelaide CBD" [ref=e108]
+        - button "Auckland CBD" [ref=e109]
+        - button "London" [ref=e110]
+        - button "New York City" [ref=e111]
+        - button "San Francisco" [ref=e112]
+        - button "Seattle" [ref=e113]
+        - button "Toronto" [ref=e114]
+        - button "Singapore" [ref=e115]
+      - button "Cancel" [ref=e116] [cursor=pointer]

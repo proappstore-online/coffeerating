@@ -1,0 +1,46 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "coffeerating" [ref=e7]
+        - button "📍 Sydney CBD" [ref=e8]
+      - generic [ref=e9]:
+        - 'button "Theme: system" [ref=e10] [cursor=pointer]':
+          - img [ref=e11]
+        - button "Settings" [ref=e13]:
+          - img [ref=e14]
+        - button "Profile" [ref=e17]:
+          - img "serge-ivo" [ref=e18]
+  - main [ref=e19]:
+    - generic [ref=e30]:
+      - heading "Rate a coffee in Sydney CBD" [level=2] [ref=e31]:
+        - text: Rate a coffee
+        - generic [ref=e32]: in Sydney CBD
+      - generic [ref=e33]:
+        - text: Photo
+        - generic [ref=e34]:
+          - generic [ref=e35]: Tap to take a photo
+          - button "Coffee photo" [ref=e36]
+      - generic [ref=e37]:
+        - text: Café
+        - textbox "Café" [ref=e40]:
+          - /placeholder: Search or add a café
+          - text: Test Cafe
+      - generic [ref=e41]:
+        - text: Rating
+        - radiogroup "Stars" [ref=e43]:
+          - button "1 star" [ref=e44] [cursor=pointer]: ★
+          - button "2 stars" [ref=e45] [cursor=pointer]: ★
+          - button "3 stars" [ref=e46] [cursor=pointer]: ★
+          - button "4 stars" [ref=e47] [cursor=pointer]: ★
+          - button "5 stars" [ref=e48] [cursor=pointer]: ★
+      - generic [ref=e49]:
+        - generic [ref=e50]: Drink (optional)
+        - textbox "Drink (optional)" [active] [ref=e51]:
+          - /placeholder: Oat flat white, extra hot
+      - generic [ref=e52]:
+        - generic [ref=e53]: Review (optional)
+        - textbox "Review (optional)" [ref=e54]
+      - generic [ref=e55]:
+        - button "Submit" [ref=e56] [cursor=pointer]
+        - button "Cancel" [ref=e57] [cursor=pointer]

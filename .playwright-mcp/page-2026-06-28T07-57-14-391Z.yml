@@ -1,0 +1,23 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "coffeerating" [active] [ref=e7]
+        - button "📍 Sydney CBD" [ref=e36]
+      - generic [ref=e8]:
+        - 'button "Theme: system" [ref=e127] [cursor=pointer]':
+          - img [ref=e10]
+        - button "Settings" [ref=e12]:
+          - img [ref=e13]
+        - button "Profile" [ref=e16]:
+          - img "serge-ivo" [ref=e17]
+  - main [ref=e18]:
+    - generic [ref=e129]:
+      - generic [ref=e130]:
+        - generic [ref=e131]:
+          - heading "Coffee in Sydney CBD" [level=1] [ref=e132]
+          - paragraph [ref=e133]: Anonymous photo + stars, in under 30 seconds.
+        - button "Rate a coffee" [ref=e134] [cursor=pointer]
+      - generic [ref=e135]:
+        - paragraph [ref=e136]: No ratings in Sydney CBD yet
+        - paragraph [ref=e137]: Be the first — rate a coffee.

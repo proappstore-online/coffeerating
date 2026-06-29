@@ -74,18 +74,7 @@ export default function App() {
               </div>
               {user && <button onClick={() => setView('submit')} className="btn btn-primary whitespace-nowrap">Rate a coffee</button>}
             </div>
-            {user ? (
-              <Feed key={`${city}-${feedKey}`} city={city!} />
-            ) : (
-              <div className="text-center py-16 space-y-4">
-                <p className="text-[var(--muted)]">Sign in to see and rate coffee in {cityLabel(city)}.</p>
-                <div className="flex items-center justify-center gap-2">
-                  <button onClick={() => app.auth.signIn('github')} className="btn btn-primary">Sign in with GitHub</button>
-                  <button onClick={() => app.auth.signIn('google')} className="btn btn-secondary">Google</button>
-                </div>
-                <p className="text-xs text-[var(--muted)]">Ratings are anonymous — your name is never shown.</p>
-              </div>
-            )}
+            <Feed key={`${city}-${feedKey}`} city={city!} />
           </div>
         ) : view === 'submit' ? (
           <SubmitForm city={city!} onDone={() => { setFeedKey((k) => k + 1); setView('home') }} />
