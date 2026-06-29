@@ -52,18 +52,23 @@ export default function App() {
                 <button onClick={() => setView('settings')} aria-label="Settings" title="Settings" className="text-[var(--muted)] hover:text-[var(--ink)] p-1"><Settings size={18} /></button>
                 <button onClick={() => setView('profile')} aria-label="Profile"><Avatar user={user} size={28} /></button>
               </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <button onClick={() => app.auth.signIn('github')} className="btn btn-primary text-xs">Sign in</button>
-                <button onClick={() => app.auth.signIn('google')} className="btn btn-secondary text-xs">Google</button>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       </header>
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-6">
-        {needCity ? (
+        {!loading && !user ? (
+          <div className="flex flex-col items-center justify-center py-24 space-y-6">
+            <h1 className="text-3xl font-bold text-[var(--ink)] display-font">coffeerating</h1>
+            <p className="text-[var(--muted)] text-center max-w-sm">Anonymous photo + star ratings for coffee spots in your city. Sign in to get started.</p>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <button onClick={() => app.auth.signIn('github')} className="btn btn-primary justify-center">Sign in with GitHub</button>
+              <button onClick={() => app.auth.signIn('google')} className="btn btn-secondary justify-center">Sign in with Google</button>
+            </div>
+            <p className="text-xs text-[var(--muted)]">Ratings are anonymous — your name is never shown.</p>
+          </div>
+        ) : needCity ? (
           <CityPicker current={city} onPick={chooseCity} onClose={city ? () => setPicking(false) : undefined} />
         ) : view === 'home' ? (
           <div className="space-y-5">
