@@ -8,3 +8,4 @@ dist/
 .vite/
 .vibe-check/
 .DS_Store
+.playwright-mcp/

@@ -37,7 +37,7 @@ export default function App() {
       <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--paper)]/90 backdrop-blur">
         <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <button onClick={() => setView('home')} className="font-bold text-[var(--ink)] display-font">coffeerating</button>
+            <button onClick={() => { setView('home'); setPicking(false) }} className="font-bold text-[var(--ink)] display-font">coffeerating</button>
             {city && (
               <button onClick={() => setPicking(true)} title="Change city"
                 className="flex items-center gap-1 text-xs font-semibold text-[var(--accent)] rounded-full border border-[var(--line)] px-2 py-0.5 hover:border-[var(--accent)] whitespace-nowrap">
