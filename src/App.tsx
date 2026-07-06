@@ -58,7 +58,11 @@ export default function App() {
       </header>
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-6">
-        {!loading && !user ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <p className="text-[var(--muted)]">Loading…</p>
+          </div>
+        ) : !user ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-6">
             <h1 className="text-3xl font-bold text-[var(--ink)] display-font">coffeerating</h1>
             <p className="text-[var(--muted)] text-center max-w-sm">Anonymous photo + star ratings for coffee spots in your city. Sign in to get started.</p>

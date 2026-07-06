@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { app, cityLabel, COFFEE_TYPES, type CafeOption } from '../shared'
 import { Stars } from './Stars'
 import { CafeSelect } from './CafeSelect'
@@ -14,10 +14,15 @@ export function SubmitForm({ city, onDone }: { city: string; onDone: () => void 
   const [review, setReview] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const previewRef = useRef<string | null>(null)
+
+  useEffect(() => () => { if (previewRef.current) URL.revokeObjectURL(previewRef.current) }, [])
 
   const pickFile = (f: File | null) => {
-    if (preview) URL.revokeObjectURL(preview)
-    setFile(f); setPreview(f ? URL.createObjectURL(f) : null)
+    if (previewRef.current) URL.revokeObjectURL(previewRef.current)
+    const url = f ? URL.createObjectURL(f) : null
+    previewRef.current = url
+    setFile(f); setPreview(url)
   }
 
   const submit = useCallback(async () => {
