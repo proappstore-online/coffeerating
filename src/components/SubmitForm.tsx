@@ -53,14 +53,25 @@ export function SubmitForm({ city, onDone }: { city: string; onDone: () => void 
   return (
     <div className="max-w-md mx-auto space-y-4">
       <h2 className="text-xl font-bold text-[var(--ink)]">Rate a coffee <span className="text-sm font-normal text-[var(--muted)]">in {cityLabel(city)}</span></h2>
-      <label className="block">
+      <div>
         <span className="text-sm font-semibold text-[var(--ink)]">Photo</span>
-        <div className="mt-1 rounded-xl border border-dashed border-[var(--line)] overflow-hidden">
-          {preview ? <img src={preview} alt="preview" className="w-full aspect-[4/3] object-cover" />
-            : <div className="aspect-[4/3] flex items-center justify-center text-[var(--muted)] text-sm">Tap to take a photo</div>}
-          <input type="file" accept="image/*" capture="environment" aria-label="Coffee photo" onChange={(e) => pickFile(e.target.files?.[0] ?? null)} className="block w-full text-xs p-2" />
-        </div>
-      </label>
+        <label className="mt-1 block cursor-pointer rounded-xl border border-dashed border-[var(--line)] overflow-hidden hover:border-[var(--accent)] transition-colors">
+          {preview ? (
+            <img src={preview} alt="" className="w-full max-h-[200px] object-cover" />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-10 text-[var(--muted)]">
+              <span className="text-2xl">📷</span>
+              <span className="text-sm mt-1">Tap to take a photo</span>
+            </div>
+          )}
+          <input type="file" accept="image/*" capture="environment" aria-label="Coffee photo" onChange={(e) => pickFile(e.target.files?.[0] ?? null)} className="sr-only" />
+        </label>
+        {preview && (
+          <button type="button" onClick={() => pickFile(null)} className="mt-1 text-xs text-[var(--muted)] hover:text-[var(--accent)]">
+            Remove photo
+          </button>
+        )}
+      </div>
       <div>
         <span className="text-sm font-semibold text-[var(--ink)]">Café</span>
         <div className="mt-1"><CafeSelect city={city} onSelect={setCafe} /></div>
